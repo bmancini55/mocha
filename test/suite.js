@@ -10,6 +10,8 @@ describe('Suite', function(){
       this.suite._timeout = 3043;
       this.suite._slow = 101;
       this.suite._bail = true;
+      this.suite._bailskip = true;
+      this.suite._failed = true;
       this.suite.suites.push(1);
       this.suite.tests.push('hello');
       this.suite._beforeEach.push(2);
@@ -32,6 +34,14 @@ describe('Suite', function(){
 
     it('should copy the bail value', function(){
       this.suite.clone().bail().should.be.true;
+    });
+
+    it('should copy the bailskip value', function(){
+      this.suite.clone().bailskip().should.be.true;
+    });
+
+    it('should copy the failed value', function(){
+      this.suite.clone().failed().should.be.true;
     });
 
     it('should not copy the values from the suites array', function(){
@@ -120,6 +130,74 @@ describe('Suite', function(){
       it('should return the Suite object', function(){
         var newSuite = this.suite.bail(false);
         newSuite.bail().should.be.false;
+      });
+    });
+  });
+
+  describe('.bailskip()', function(){
+    beforeEach(function(){
+      this.suite = new Suite('A Suite');
+    });
+
+    describe('when no argument is passed', function(){
+      it('should return the bailskip value', function(){
+        this.suite.bailskip().should.be.false;
+      });
+    });
+
+    describe('when argument is passed', function(){
+      it('should return the Suite object', function(){
+        var newSuite = this.suite.bailskip(true);
+        newSuite.bailskip().should.be.true;
+      });
+    });
+
+    describe('when there are sub-suites', function(){
+      beforeEach(function(){
+        this.suite.suites = [ 
+          new Suite('Sub-Suite A'),
+          new Suite('Sub-Suite B')
+        ];
+      });
+
+      it('should propagate the bailskip value', function(){
+        var newSuite = this.suite.bailskip(true);     
+        newSuite.suites[0].bailskip().should.be.true;
+        newSuite.suites[1].bailskip().should.be.true;
+      });
+    });
+  });
+
+  describe('.failed()', function(){
+    beforeEach(function(){
+      this.suite = new Suite('A Suite');
+    });
+
+    describe('when no argument is passed', function(){
+      it('should return the failed value', function(){
+        this.suite.failed().should.be.false;
+      });
+    });
+
+    describe('when argument is passed', function(){
+      it('should return the Suite object', function(){
+        var newSuite = this.suite.failed(true);
+        newSuite.failed().should.be.true;
+      });
+    });
+
+    describe('when there are sub-suites', function(){
+      beforeEach(function(){
+        this.suite.suites = [ 
+          new Suite('Sub-Suite A'),
+          new Suite('Sub-Suite B')
+        ];
+      });
+
+      it('should propagate the bailskip value', function(){
+        var newSuite = this.suite.failed(true);     
+        newSuite.suites[0].failed().should.be.true;
+        newSuite.suites[1].failed().should.be.true;
       });
     });
   });
